@@ -1,0 +1,1 @@
+{"buildTime":"2026-07-18T14:01:25.513Z","sources":[{"id":"HotComics","name":"HotComics","author":"Atomicman","desc":"Extension that pulls manga from https://w1.hotcomics.me","contentRating":"MATURE","version":"1.0","icon":"icon.png","tags":[],"websiteBaseURL":"https://w1.hotcomics.me","intents":21}],"builtWith":{"toolchain":"0.8.7","types":"0.8.7"}}
