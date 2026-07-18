@@ -291,40 +291,16 @@ export class HotComics
         const response = await this.requestManager.schedule(request, 1)
         const $ = cheerio.load(response.data as string)
 
-        const pages: string[] = [];
+        const first = $("div.viewer-imgs img").first();
 
-        $("div.viewer-imgs img").each((_, element) => {
-
-            const img = $(element);
-
-            let image = img.attr("src") ?? "";
-
-            // Fallback to original CDN image if src is missing
-            if (!image) {
-                const backup = img.attr("data-backup-sources");
-                if (backup) {
-                    try {
-                        const sources = JSON.parse(backup);
-                        image = sources[1] ?? sources[0] ?? "";
-                    } catch {}
-                }
-            }
-
-            if (!image || image.includes("preloader.gif")) {
-                return;
-            }
-
-            pages.push(image.trim());
-        });
-
-         console.log("Pages found:", pages.length);
-         console.log(pages);
-
-        return App.createChapterDetails({
-            id: chapterId,
-            mangaId: mangaId,
-            pages: ["https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg"]
-        });
+         throw new Error(
+             JSON.stringify({
+         src: first.attr("src"),
+         dataSrc: first.attr("data-src"),
+         original: first.attr("data-original"),
+         backup: first.attr("data-backup-sources")
+    })
+);
         }
 
         async getCloudflareBypassRequestAsync(): Promise<Request> {
