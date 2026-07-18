@@ -1,8 +1,8 @@
 {
-  "name": "hotcomicsExtensions0.8",
+  "name": "HotComicExtensions0.8",
   "version": "0.1",
-  "repositoryName": "HoTComicsExtension0.8",
-  "description": "HoTComicsExtension0.8",
+  "repositoryName": "HoTComicExtension0.8",
+  "description": "HoTComicExtension0.8",
   "main": "index.js",
   "scripts": {
     "bundle": "npx paperback bundle",
