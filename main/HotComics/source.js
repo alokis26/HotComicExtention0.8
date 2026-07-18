@@ -14980,6 +14980,7 @@ var _Sources = (() => {
       });
       const response = await this.requestManager.schedule(request, 1);
       const $2 = load(response.data);
+      console.log(response.data);
       const title = $2("h1").first().text().trim();
       const image = $2('meta[property="og:image"]').attr("content") ?? "";
       const status = "ONGOING";
@@ -15108,38 +15109,14 @@ var _Sources = (() => {
       });
     }
     async getChapters(mangaId) {
-      const request = App.createRequest({
-        url: `${DOMAIN2}/en/${mangaId}.html`,
-        method: "GET"
-      });
-      const response = await this.requestManager.schedule(request, 1);
-      const $2 = load(response.data);
-      const chapters = [];
-      $2("ol.list-ep > li").each((_, element) => {
-        const unit = $2(element);
-        const link = unit.find("a").first();
-        const onclick = link.attr("onclick") ?? "";
-        const urlMatch = onclick.match(/'(https:\/\/[^']+)'/);
-        const url = urlMatch?.[1] ?? "";
-        const title = unit.find(".cell-num span").text().trim() || unit.find(".cell-num .num").text().trim();
-        const date = unit.find("time").attr("datetime") ?? unit.find("time").text().trim();
-        const chapterMatch = title.match(/\d+/);
-        const chapNum = chapterMatch ? parseFloat(chapterMatch[0]) : 0;
-        const chapterId = url.replace(`${DOMAIN2}/en/${mangaId}/`, "").replace(".html", "");
-        if (chapterId) {
-          chapters.push(
-            App.createChapter({
-              id: chapterId,
-              chapNum,
-              name: title,
-              volume: 0,
-              time: date ? new Date(date) : void 0,
-              langCode: "\u{1F1EC}\u{1F1E7}"
-            })
-          );
-        }
-      });
-      return chapters;
+      return [
+        App.createChapter({
+          id: "test",
+          chapNum: 1,
+          name: "Test Chapter",
+          langCode: "en"
+        })
+      ];
     }
     async getChapterDetails(mangaId, chapterId) {
       const request = App.createRequest({
@@ -15167,10 +15144,12 @@ var _Sources = (() => {
         }
         pages.push(image.trim());
       });
+      console.log("Pages found:", pages.length);
+      console.log(pages);
       return App.createChapterDetails({
         id: chapterId,
         mangaId,
-        pages
+        pages: ["https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg"]
       });
     }
     async getCloudflareBypassRequestAsync() {
