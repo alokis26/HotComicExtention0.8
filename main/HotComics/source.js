@@ -15125,32 +15125,15 @@ var _Sources = (() => {
       });
       const response = await this.requestManager.schedule(request, 1);
       const $2 = load(response.data);
-      const pages = [];
-      $2("div.viewer-imgs img").each((_, element) => {
-        const img = $2(element);
-        let image = img.attr("src") ?? "";
-        if (!image) {
-          const backup = img.attr("data-backup-sources");
-          if (backup) {
-            try {
-              const sources = JSON.parse(backup);
-              image = sources[1] ?? sources[0] ?? "";
-            } catch {
-            }
-          }
-        }
-        if (!image || image.includes("preloader.gif")) {
-          return;
-        }
-        pages.push(image.trim());
-      });
-      console.log("Pages found:", pages.length);
-      console.log(pages);
-      return App.createChapterDetails({
-        id: chapterId,
-        mangaId,
-        pages: ["https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg"]
-      });
+      const first2 = $2("div.viewer-imgs img").first();
+      throw new Error(
+        JSON.stringify({
+          src: first2.attr("src"),
+          dataSrc: first2.attr("data-src"),
+          original: first2.attr("data-original"),
+          backup: first2.attr("data-backup-sources")
+        })
+      );
     }
     async getCloudflareBypassRequestAsync() {
       return App.createRequest({
