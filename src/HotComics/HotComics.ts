@@ -273,18 +273,61 @@ export class HotComics
              });
 }
 
-     async getChapters(mangaId: string): Promise<Chapter[]> {
-             return [App.createChapter({
-             id: "test",
-             chapNum: 1,
-             name: "Test Chapter",
-             langCode: "en"
-        })
-    ];
-}
+            async getChapters(mangaId: string): Promise<Chapter[]> {
+                const request = App.createRequest({
+                    url: `${DOMAIN}/en/${mangaId}.html`,
+                    method: "GET",
+                });
+
+                const response = await this.requestManager.schedule(request, 1);
+                const $ = cheerio.load(response.data as string);
+
+                const chapters: Chapter[] = [];
+
+                $("ol.list-ep > li").each((_, element) => {
+                    const unit = $(element);
+
+                    const link = unit.find("a").first();
+                    const onclick = link.attr("onclick") ?? "";
+
+                    const urlMatch = onclick.match(/'(https:\/\/[^']+)'/);
+                    const url = urlMatch?.[1] ?? "";
+
+                    const title =
+                        unit.find(".cell-num span").text().trim() ||
+                        unit.find(".cell-num .num").text().trim();
+
+                    const date =
+                        unit.find("time").attr("datetime") ??
+                        unit.find("time").text().trim();
+
+                    const chapterMatch = title.match(/\d+/);
+
+                    const chapNum = chapterMatch
+                        ? parseFloat(chapterMatch[0])
+                        : 0;
+
+                    // <<< CHANGED LINE
+                    const chapterId = url;
+
+                    if (chapterId) {
+                        chapters.push(App.createChapter({
+                            id: chapterId,
+                            chapNum,
+                            name: title,
+                            volume: 0,
+                            time: date ? new Date(date) : undefined,
+                            langCode: "en"
+                        }));
+                    }
+                });
+
+                return chapters;
+            }
+
             async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
             const request = App.createRequest({
-            url: `${DOMAIN}/en/${mangaId}/${chapterId}.html`,
+            url: chapterId,
             method: "GET",
             });
 
