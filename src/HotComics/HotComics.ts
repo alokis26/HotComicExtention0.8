@@ -326,6 +326,9 @@ export class HotComics
             }
 
             async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
+                
+                throw new Error(`mangaId = ${mangaId}\n\nchapterId = ${chapterId}`
+                );
                 const request = App.createRequest({
                     url: chapterId,
                     method: "GET",
