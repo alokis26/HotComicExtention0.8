@@ -15141,6 +15141,11 @@ var _Sources = (() => {
       return chapters;
     }
     async getChapterDetails(mangaId, chapterId) {
+      throw new Error(
+        `mangaId = ${mangaId}
+
+chapterId = ${chapterId}`
+      );
       const request = App.createRequest({
         url: chapterId,
         method: "GET"
