@@ -15124,16 +15124,17 @@ var _Sources = (() => {
         method: "GET"
       });
       const response = await this.requestManager.schedule(request, 1);
-      const $2 = load(response.data);
-      const first2 = $2("div.viewer-imgs img").first();
-      throw new Error(
-        JSON.stringify({
-          src: first2.attr("src"),
-          dataSrc: first2.attr("data-src"),
-          original: first2.attr("data-original"),
-          backup: first2.attr("data-backup-sources")
-        })
-      );
+      const html3 = response.data;
+      if (html3.includes("viewer-imgs")) {
+        return App.createChapterDetails({
+          id: chapterId,
+          mangaId,
+          pages: [
+            "https://picsum.photos/800/1200"
+          ]
+        });
+      }
+      throw new Error("viewer-imgs NOT FOUND");
     }
     async getCloudflareBypassRequestAsync() {
       return App.createRequest({
