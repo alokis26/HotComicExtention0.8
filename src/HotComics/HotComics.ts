@@ -282,28 +282,30 @@ export class HotComics
         })
     ];
 }
-    async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
-        const request = App.createRequest({
+            async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
+            const request = App.createRequest({
             url: `${DOMAIN}/en/${mangaId}/${chapterId}.html`,
-            method: 'GET',
-        })
- 
-        const response = await this.requestManager.schedule(request, 1)
-        const $ = cheerio.load(response.data as string)
+            method: "GET",
+            });
 
-        const first = $("div.viewer-imgs img").first();
+            const response = await this.requestManager.schedule(request, 1);
 
-         throw new Error(
-             JSON.stringify({
-         src: first.attr("src"),
-         dataSrc: first.attr("data-src"),
-         original: first.attr("data-original"),
-         backup: first.attr("data-backup-sources")
-    })
-);
-        }
+            const html = response.data as string;
 
-        async getCloudflareBypassRequestAsync(): Promise<Request> {
+            if (html.includes("viewer-imgs")) {
+            return App.createChapterDetails({
+                id: chapterId,
+                mangaId: mangaId,
+                pages: [
+                    "https://picsum.photos/800/1200"
+                ]
+            });
+            }
+
+            throw new Error("viewer-imgs NOT FOUND");
+            }
+
+            async getCloudflareBypassRequestAsync(): Promise<Request> {
             return App.createRequest({
                 url: DOMAIN,
                 method: "GET",
