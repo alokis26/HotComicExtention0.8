@@ -326,26 +326,49 @@ export class HotComics
             }
 
             async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
-            const request = App.createRequest({
-            url: chapterId,
-            method: "GET",
-            });
+                const request = App.createRequest({
+                    url: chapterId,
+                    method: "GET",
+                });
 
-            const response = await this.requestManager.schedule(request, 1);
+                const response = await this.requestManager.schedule(request, 1);
+                const $ = cheerio.load(response.data as string);
 
-            const html = response.data as string;
+                const pages: string[] = [];
 
-            if (html.includes("viewer-imgs")) {
-            return App.createChapterDetails({
-                id: chapterId,
-                mangaId: mangaId,
-                pages: [
-                    "https://picsum.photos/800/1200"
-                ]
-            });
-            }
+                $("div.viewer-imgs img").each((_, element) => {
+                    const img = $(element);
 
-            throw new Error("viewer-imgs NOT FOUND");
+                    let image =
+                        img.attr("src") ||
+                        img.attr("data-src") ||
+                        img.attr("data-original") ||
+                        "";
+
+                    if (!image) {
+                        const backup = img.attr("data-backup-sources");
+                        if (backup) {
+                            try {
+                                const sources = JSON.parse(backup);
+                                image = sources[1] ?? sources[0] ?? "";
+                            } catch {}
+                        }
+                    }
+
+                    if (image) {
+                        pages.push(image.trim());
+                    }
+                });
+
+                if (pages.length === 0) {
+                    throw new Error("No pages found");
+                }
+
+                return App.createChapterDetails({
+                    id: chapterId,
+                    mangaId,
+                    pages
+                });
             }
 
             async getCloudflareBypassRequestAsync(): Promise<Request> {
