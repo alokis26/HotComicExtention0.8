@@ -14980,7 +14980,6 @@ var _Sources = (() => {
       });
       const response = await this.requestManager.schedule(request, 1);
       const $2 = load(response.data);
-      console.log(response.data);
       const title = $2("h1").first().text().trim();
       const image = $2('meta[property="og:image"]').attr("content") ?? "";
       const status = "ONGOING";
@@ -15044,20 +15043,6 @@ var _Sources = (() => {
         metadata: void 0
       });
     }
-    // private async getMangaIdFromChapter(chapterId: string): Promise<string> {
-    //     const request = App.createRequest({
-    //         url: `${DOMAIN}/en/${chapterId}.html`,
-    //         method: "GET",
-    //     });
-    //     const response = await this.requestManager.schedule(request, 1);
-    //     const $ = cheerio.load(response.data as string);
-    //     const canonical = $('link[rel="canonical"]').attr("href") ?? "";
-    //     const match = canonical.match(/\/en\/([^/]+)\//);
-    //     if (!match) {
-    //     throw new Error("Manga ID not found");
-    //     }
-    //     return match[1];
-    // }
     async getViewMoreItems(homepageSectionId, metadata) {
       const page = metadata?.page ?? 1;
       const collectedIds = metadata?.collectedIds ?? [];
@@ -15108,6 +15093,11 @@ var _Sources = (() => {
         metadata
       });
     }
+    /*
+    * Fetch every chapter belonging to a manga.
+    * The chapter ID is stored as the FULL chapter URL because
+    * HotComics uses unique URLs for every chapter.
+    */
     async getChapters(mangaId) {
       const request = App.createRequest({
         url: `${DOMAIN2}/en/${mangaId}.html`,
@@ -15169,7 +15159,6 @@ var _Sources = (() => {
       if (pages.length === 0) {
         throw new Error("No pages found");
       }
-      console.log(pages.slice(0, 5));
       return App.createChapterDetails({
         id: chapterId,
         mangaId,
