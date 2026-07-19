@@ -15141,11 +15141,6 @@ var _Sources = (() => {
       return chapters;
     }
     async getChapterDetails(mangaId, chapterId) {
-      throw new Error(
-        `mangaId = ${mangaId}
-
-chapterId = ${chapterId}`
-      );
       const request = App.createRequest({
         url: chapterId,
         method: "GET"
@@ -15155,16 +15150,17 @@ chapterId = ${chapterId}`
       const pages = [];
       $2("div.viewer-imgs img").each((_, element) => {
         const img = $2(element);
-        let image = img.attr("src") || img.attr("data-src") || img.attr("data-original") || "";
-        if (!image) {
-          const backup = img.attr("data-backup-sources");
-          if (backup) {
-            try {
-              const sources = JSON.parse(backup);
-              image = sources[1] ?? sources[0] ?? "";
-            } catch {
-            }
+        let image = "";
+        const backup = img.attr("data-backup-sources");
+        if (backup) {
+          try {
+            const sources = JSON.parse(backup);
+            image = sources[1] ?? sources[0] ?? "";
+          } catch {
           }
+        }
+        if (!image) {
+          image = img.attr("data-src") || img.attr("data-original") || img.attr("src") || "";
         }
         if (image) {
           pages.push(image.trim());
@@ -15173,6 +15169,7 @@ chapterId = ${chapterId}`
       if (pages.length === 0) {
         throw new Error("No pages found");
       }
+      console.log(pages.slice(0, 5));
       return App.createChapterDetails({
         id: chapterId,
         mangaId,
