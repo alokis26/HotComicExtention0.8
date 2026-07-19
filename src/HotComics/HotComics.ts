@@ -88,7 +88,6 @@ export class HotComics
 
         const response = await this.requestManager.schedule(request, 1)
         const $ = cheerio.load(response.data as string)
-        console.log(response.data as string);
 
         const title = $("h1").first().text().trim();
         const image =
@@ -184,23 +183,6 @@ export class HotComics
         });
     }
 
-    // private async getMangaIdFromChapter(chapterId: string): Promise<string> {
-    //     const request = App.createRequest({
-    //         url: `${DOMAIN}/en/${chapterId}.html`,
-    //         method: "GET",
-    //     });
-
-    //     const response = await this.requestManager.schedule(request, 1);
-    //     const $ = cheerio.load(response.data as string);
-
-    //     const canonical = $('link[rel="canonical"]').attr("href") ?? "";
-    //     const match = canonical.match(/\/en\/([^/]+)\//);
-    //     if (!match) {
-    //     throw new Error("Manga ID not found");
-    //     }
-
-    //     return match[1];
-    // }
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
         const page: number = metadata?.page ?? 1;
@@ -273,6 +255,12 @@ export class HotComics
              });
 }
 
+            /*
+            * Fetch every chapter belonging to a manga.
+            * The chapter ID is stored as the FULL chapter URL because
+            * HotComics uses unique URLs for every chapter.
+            */
+
             async getChapters(mangaId: string): Promise<Chapter[]> {
                 const request = App.createRequest({
                     url: `${DOMAIN}/en/${mangaId}.html`,
@@ -288,7 +276,11 @@ export class HotComics
                     const unit = $(element);
 
                     const link = unit.find("a").first();
+
+                    // Chapter URL is hidden inside the onclick popupLogin(...)
                     const onclick = link.attr("onclick") ?? "";
+
+                    // Extract the real chapter URL from popupLogin('...')
 
                     const urlMatch = onclick.match(/'(https:\/\/[^']+)'/);
                     const url = urlMatch?.[1] ?? "";
@@ -307,7 +299,10 @@ export class HotComics
                         ? parseFloat(chapterMatch[0])
                         : 0;
 
-                    // <<< CHANGED LINE
+                    // IMPORTANT:
+                    // Store the complete URL instead of rebuilding it later.
+                    // Some comics break if we reconstruct the URL ourselves.
+
                     const chapterId = url;
 
                     if (chapterId) {
@@ -370,8 +365,7 @@ export class HotComics
                     throw new Error("No pages found");
                 }
 
-                console.log(pages.slice(0, 5));
-                
+
                 return App.createChapterDetails({
                     id: chapterId,
                     mangaId,
