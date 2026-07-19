@@ -327,8 +327,7 @@ export class HotComics
 
             async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
                 
-                throw new Error(`mangaId = ${mangaId}\n\nchapterId = ${chapterId}`
-                );
+               
                 const request = App.createRequest({
                     url: chapterId,
                     method: "GET",
@@ -339,34 +338,40 @@ export class HotComics
 
                 const pages: string[] = [];
 
-                $("div.viewer-imgs img").each((_, element) => {
-                    const img = $(element);
+            $("div.viewer-imgs img").each((_, element) => {
+                const img = $(element);
 
-                    let image =
-                        img.attr("src") ||
+                let image = "";
+
+                const backup = img.attr("data-backup-sources");
+                if (backup) {
+                    try {
+                        const sources = JSON.parse(backup);
+
+                        // Prefer HotComics' own image server
+                        image = sources[1] ?? sources[0] ?? "";
+                    } catch {}
+                }
+
+                if (!image) {
+                    image =
                         img.attr("data-src") ||
                         img.attr("data-original") ||
+                        img.attr("src") ||
                         "";
+                }
 
-                    if (!image) {
-                        const backup = img.attr("data-backup-sources");
-                        if (backup) {
-                            try {
-                                const sources = JSON.parse(backup);
-                                image = sources[1] ?? sources[0] ?? "";
-                            } catch {}
-                        }
-                    }
-
-                    if (image) {
-                        pages.push(image.trim());
-                    }
-                });
+                if (image) {
+                    pages.push(image.trim());
+                }
+            });
 
                 if (pages.length === 0) {
                     throw new Error("No pages found");
                 }
 
+                console.log(pages.slice(0, 5));
+                
                 return App.createChapterDetails({
                     id: chapterId,
                     mangaId,
