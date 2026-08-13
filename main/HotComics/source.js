@@ -14931,7 +14931,7 @@ var _Sources = (() => {
   };
 
   // src/HotComics/HotComics.ts
-  var DOMAIN2 = "https://w1.hotcomics.me";
+  var DOMAIN2 = "https://hotcomics.io";
   var HotComicsInfo = {
     version: "1.0",
     name: "HotComics",
