@@ -57,8 +57,8 @@ export class HotComics
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {
                     ...(request.headers ?? {}), ...{
-                        origin: `https://w1.hotcomics.me`,
-                        referer: `https://w1.hotcomics.me`,
+                        origin: DOMAIN ,
+                        referer: DOMAIN ,
                         "user-agent": await this.requestManager.getDefaultUserAgent(),
                         accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
                         "accept-language": "en-US,en;q=0.5",
