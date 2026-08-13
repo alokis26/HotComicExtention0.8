@@ -25,7 +25,7 @@ import {
     parseHomeSections,
 } from './HotComicsParser'
 
-const DOMAIN = "https://w1.hotcomics.me";
+const DOMAIN = "https://hotcomics.io";
 
 export const HotComicsInfo: SourceInfo = {
     version: '1.0',
